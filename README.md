@@ -14,7 +14,7 @@ When using any api, the first thing I like to do is get my basic connection danc
 I chose a very simple end point for this (`/folders`) to see if I could just list out the files
 in my google drive.
 
-Let's take a look at the [code](https://github.com/corylanou/cloud-elements-demo/blob/master/01_connecting/main.go).
+Let's take a look at the [code](https://github.com/corylanou/cloud-elements-demo/blob/master/01_connecting/).
 
 *WARNING*: It's UGLY!
 
