@@ -24,7 +24,7 @@ Let's take a look at the [code](https://github.com/corylanou/cloud-elements-demo
 
 #### Consuming the File Library
 
-#### Sycing different sources
+#### Syncing different sources
 
 ## Learning Notes
 
