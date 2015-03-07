@@ -24,15 +24,45 @@ The [current library](https://github.com/corylanou/cloud-elements) has some limi
 
 #### The CloudFiles Library
 
+Current functionality:
+```go
+type Folders struct {
+    // contains filtered or unexported fields
+}
+```
+Folders defines all methods to access/manipulate the Folders endpoint
+
+```go
+func (f Folders) Contents(folderPath string, provider Provider) (Files, *Error)
+```
+Contents will retrieve the contents of a folder
+
+```go
+func (f Folders) CreateFile(fileInfo File, overwrite bool, reader io.ReadCloser, provider Provider) (*File, *Error)
+```
+CreateFile will create a file
+
+```go
+func (f Folders) CreateFolder(folderPath string, provider Provider) (*File, *Error)
+```
+CreateFolder will create a folder
+
+```go
+func (f Folders) GetFileById(id string, provider Provider) (io.ReadCloser, *Error)
+```
+GetFile will retrieve the file and return it as a reader
+
 #### Consuming the File Library
 
 [code](https://github.com/corylanou/cloud-elements-demo/blob/master/02_consuming/).
 
 #### Syncing different sources
 
-## Learning Notes
+[code](https://github.com/corylanou/cloud-elements-demo/blob/master/03_sync/).
 
-### Cloud Elements Site
+Using the basic cli, you can sync files from one folder to another on dropbox and google drive.
+
+## Learning Notes
 
 Whenever I use a new API, I always find it helpful to talk about things that I found challenging, and I think others would too.
 These points are not meant to put down the API I'm using, but are to be used for me to give feedback, and maybe even contribute
