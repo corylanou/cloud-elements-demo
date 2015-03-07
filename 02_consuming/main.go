@@ -14,21 +14,21 @@ func main() {
 	credentials := cloudElements.Credentials{
 		User:         os.Getenv("CE_USER"),
 		Organization: os.Getenv("CE_ORGANIZATION"),
-		Elements:     make(map[int]string),
+		Elements:     make(map[cloudElements.Provider]string),
 	}
 	credentials.Elements[cloudElements.GOOGLE_DRIVE] = os.Getenv("CE_GOOGLEDRIVE")
 	credentials.Elements[cloudElements.DROPBOX] = os.Getenv("CE_DROPBOX")
 
 	client := cloudElements.NewClient(credentials)
 
-	googleFiles, err := client.CloudFiles.Contents("/", cloudElements.GOOGLE_DRIVE)
+	googleFiles, err := client.Folders.Contents("/", cloudElements.GOOGLE_DRIVE)
 	if err != nil {
 		spew.Dump(err)
 		return
 	}
 	writeCSV(googleFiles, "google")
 
-	dropboxFiles, err := client.CloudFiles.Contents("/", cloudElements.DROPBOX)
+	dropboxFiles, err := client.Folders.Contents("/", cloudElements.DROPBOX)
 	if err != nil {
 		spew.Dump(err)
 		return
@@ -38,7 +38,7 @@ func main() {
 }
 
 // Write the contents out nicely in columns
-func writeCSV(files []cloudElements.CloudFile, source string) {
+func writeCSV(files cloudElements.Files, source string) {
 	fmt.Println()
 	columnNames := []string{"source", "id", "name", "directory"}
 	rows := []string{}
