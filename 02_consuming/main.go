@@ -20,15 +20,16 @@ func main() {
 	credentials.Elements[cloudElements.DROPBOX] = os.Getenv("CE_DROPBOX")
 
 	client := cloudElements.NewClient(credentials)
+	folders := cloudElements.NewFolders(client)
 
-	googleFiles, err := client.Folders.Contents("/", cloudElements.GOOGLE_DRIVE)
+	googleFiles, err := folders.Contents("/", cloudElements.GOOGLE_DRIVE)
 	if err != nil {
 		spew.Dump(err)
 		return
 	}
 	writeCSV(googleFiles, "google")
 
-	dropboxFiles, err := client.Folders.Contents("/", cloudElements.DROPBOX)
+	dropboxFiles, err := folders.Contents("/", cloudElements.DROPBOX)
 	if err != nil {
 		spew.Dump(err)
 		return

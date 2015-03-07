@@ -1,0 +1,446 @@
+Consuming APIs with Go 
+18:00 10 Mar 2015
+Tags: go
+
+Cory LaNou
+InfluxDB | Gopher
+
+http://denvergophers.github.io/
+@corylanou
+
+* A little about Go
+
+* Companies using Go
+
+- Google / You Tube
+- Facebook
+- Apple
+- DropBox
+- Docker
+- Canonical
+- Heroku
+- Iron.io
+- BBC World News
+- Nokia Siemens Network
+- CloudFlare
+- Airbrake
+
+* Companies using Go in Denver
+
+- Bitly
+- SendGrid
+- Pivotal Labs
+- Comast VIPER
+- InfluxDB
+- SpexIT
+- and so many more...
+
+* so... why go?
+
+* Because we have an awesome mascott!
+
+.image /resources/img/gopher.jpg
+
+* But seriously...
+
+- Go was created to make software engineering easier
+- Software needs to scale beyond machine scale, but at human scale as well
+
+* In the words of Andrew Gerrand
+
+- software _should_ be simple
+- software _can_ be simple
+
+* What Andrew means by "simple"
+
+- Small
+- Readable
+- Consistent
+- Orthogonal
+- Predictable
+- Robust
+- Useful by default
+
+* Go at a glance
+
+- Compiled
+- Statically typed
+- Clean syntax
+- Simple type system
+- Concurrency primitives
+- Rich standard library
+- Open source
+- Great Tools
+- Testing and Benchmarking
+
+* Hello, Go
+
+.play ./resources/hello.go
+
+* Why I like Go
+
+- Compiles to a static binary - ease of distribution
+- Rediculously fast compile and test times (microseconds anyone?)
+- Easy to get up to speed and be productive on new projects
+- Batteries included tool chain - linter/testing/cross compiling/profiling/benchmarking
+
+* Want to learn more?
+
+* Come to our monthly meetup
+
+*When:* Fourth Thursday of every month, 6:30pm to 9:00 pm
+*Where:* Galvanize (where you are now)
+
+FREE BEER AND PIZZA!
+
+*RSVP:* 
+
+.link http://www.meetup.com/Denver-Go-Language-User-Group/  www.meetup.com/Denver-Go-Language-User-Group
+
+* Why APIs?
+
+- Great HTTP/JSON library
+- Bare metal - nothing is outside my reach
+- Extremely scalable and lightweight
+
+* What is Cloud Elements?
+
+- Consolidate API's across similiar platforms
+- Great code reuse
+- Easy to switch providers
+- Enable quicker/wider developer adoption
+
+* Setting up Cloud Elements
+
+one word.. EASY!
+
+.link http://cloud-elements.com/quick-start-guide-documents-hub/ Documents Quick Start Guide
+
+* The Goal
+
+- Learn more about the Cloud Elements API
+- Sync files between one document provider to another
+- DropBox <---> Google Drive
+
+* Lets get started!
+
+- Cloud Elements handles authentication via tokens.
+- Storing security tokens in a config file can be dangerous
+
+* The environment
+
+Create a `dev.env` file with the following content:
+
+	export CE_GOOGLEDRIVE="<token>"
+	export CE_DROPBOX="<token>"
+	export CE_USER="<token>"
+	export CE_ORGANIZATION="<token>"
+
+Then run :
+
+	source dev.env
+
+This will populate your current terminal with the needed environment to run the following demos.
+
+* Populating from the environment
+
+	credentials := Credentials{
+		User:         os.Getenv("CE_USER"),
+		Organization: os.Getenv("CE_ORGANIZATION"),
+		Elements:     make(map[int]string),
+	}
+	credentials.Elements[GOOGLE_DRIVE] = os.Getenv("CE_GOOGLEDRIVE")
+	credentials.Elements[DROPBOX] = os.Getenv("CE_DROPBOX")
+
+
+* Connecting
+
+The base url:
+
+	console.cloud-elements.com/elements/api-v2
+
+
+Creating a url for the listing the contents of a folder
+
+	u := url.URL{
+		Path:   path.Join(baseURL, "/hubs/documents/folders/contents"),
+		Scheme: "https",
+	}
+
+	query := url.Values{}
+	query.Set("path", "/")
+	u.RawQuery = query.Encode()
+
+
+* Retreiving
+
+	client := http.Client{}
+	req, _ := http.NewRequest("GET", u.String(), nil)
+	req.Header.Set("Authorization", credentials.Authorization(GOOGLE_DRIVE))
+
+	response, err := client.Do(req)
+
+* Checking for errors:
+
+	if response.StatusCode != http.StatusOK {
+		var e Error
+		if err := json.NewDecoder(response.Body).Decode(&e); err != nil {
+			panic(err)
+		}
+		spew.Dump(e)
+
+		return
+	}
+
+* Listing the file contents
+
+	var cloudFiles CloudFiles
+
+	defer response.Body.Close()
+	if err := json.NewDecoder(response.Body).Decode(&cloudFiles); err != nil {
+		panic(err)
+	}
+	spew.Dump(cloudFiles)
+
+
+* The Models
+
+	type CloudFiles []CloudFile
+	type CloudFile struct {
+		Id           string   `json:"id"`
+		Name         string   `json:"name"`
+		Path         string   `json:"path"`
+		CreateDate   string   `json:"createDate"`
+		Directory    bool     `json:"directory"`
+		ModifiedDate string   `json:"modifiedDate"`
+		Size         int      `json:"size"`
+		Tags         []string `json:"tags"`
+	}
+
+	type Error struct {
+		Message   string `json:"message"`
+		RequestId string `json:"requestId"`
+	}
+
+
+* Putting it together
+
+.link https://github.com/corylanou/cloud-elements-demo/blob/master/01_connecting/main.go The Code
+
+- So it worked...
+- It is a bit of a mess
+- It isn't resuable
+
+* Time for a Library!
+
+* Something simple
+
+The library:
+
+	"github.com/corylanou/cloud-elements"
+
+The Code
+
+	func main() {
+		credentials := cloudElements.Credentials{
+			User:         os.Getenv("CE_USER"),
+			Organization: os.Getenv("CE_ORGANIZATION"),
+			Elements:     make(map[cloudElements.Provider]string),
+		}
+		credentials.Elements[cloudElements.GOOGLE_DRIVE] = os.Getenv("CE_GOOGLEDRIVE")
+
+		client := cloudElements.NewClient(credentials)
+
+		googleFiles, err := client.Folders.Contents("/", cloudElements.GOOGLE_DRIVE)
+		if err != nil {
+			panic(err)
+		}
+		spew.Dump(googleFiles)
+	}
+
+* And working from that...
+
+- List Dropbox contents and Google contents
+- Ouput in column format
+
+.link https://github.com/corylanou/cloud-elements-demo/blob/master/02_consuming/main.go The Code
+
+And... let's run it!
+
+* Looking at the library
+
+* Client
+
+Client is the top level "connection" to Cloud Elements API
+
+	// Client is the top level connector to Cloud Elements
+	type Client struct {
+		credentials Credentials
+	}
+
+	// NewClient will return a new instance of Client
+	func NewClient(cr Credentials) *Client {
+		return &Client{
+			credentials: cr,
+		}
+	}
+
+* Errors
+
+Cloud Elements responds with a standard error response
+
+	// Error is a generic error returned from Cloud Elements, or this client libarary
+	type Error struct {
+		Message    string `json:"message"`
+		RequestId  string `json:"requestId"`
+		StatusCode int
+	}
+
+NOTE: StatusCode is something I added on top of their standard message.  This is useful as the API is restful and the status codes mean something.
+
+* End Points
+
+	const (
+		baseURL = "console.cloud-elements.com/elements/api-v2"
+	)
+
+	func filesURL() url.URL {
+		return url.URL{
+			Path:   path.Join(baseURL, "/hubs/documents/files"),
+			Scheme: "https",
+		}
+	}
+	func foldersURL() url.URL {
+		return url.URL{
+			Path:   path.Join(baseURL, "/hubs/documents/folders"),
+			Scheme: "https",
+		}
+	}
+
+	func folderContentsURL() url.URL {
+		return url.URL{
+			Path:   path.Join(baseURL, "/hubs/documents/folders/contents"),
+			Scheme: "https",
+		}
+	}
+
+* Credentials
+
+	// Credentials stores all token information to authenticate to
+	// Cloud Elements, as well as each element
+	type Credentials struct {
+		Elements     map[Provider]string
+		Organization string
+		User         string // User Secret
+	}
+
+	// Authorization is formatted as:
+	// User <secret>, Organization <token>, Element <token>
+	func (c Credentials) Authorization(element Provider) string {
+		return fmt.Sprintf(`User %s, Organization %s, Element %s`, c.User, c.Organization, c.Elements[element])
+	}
+
+* Some Utilities
+
+`json.go` and `request.go` have basic http and json helper utilties that quickly wrap up common routines.
+
+* Files
+
+`files.go` is where the meat of the current library resides.  This is just a start of where this library could go.
+
+* Provider
+
+	const (
+		GOOGLE_DRIVE Provider = iota
+		DROPBOX
+	)
+
+	type Provider int
+
+	func (p Provider) String() string {
+		switch p {
+		case GOOGLE_DRIVE:
+			return "Google Drive"
+		case DROPBOX:
+			return "DropBox"
+		default:
+			return ""
+		}
+	}
+
+* Folders
+
+	// Folders defines all methods to access/manipulate the Folders endpoint
+	type Folders struct {
+		client *Client
+	}
+
+	// NewFolders returns a folders object to manipulate the Docuemnts endpoints
+	func NewFolders(c *Client) *Folders {
+		return &Folders{
+			client: c,
+		}
+	}
+
+* Listing Contents
+
+	func (f Folders) Contents(folderPath string, provider Provider) (Files, *Error) {
+		folderPath = path.Join("/", folderPath)
+		query := url.Values{}
+		query.Set("path", folderPath)
+		u := folderContentsURL()
+		u.RawQuery = query.Encode()
+
+		req := newRequest(u, map[string]string{"Authorization": f.client.credentials.Authorization(provider)})
+		resp, err := req.do("GET", nil)
+		if err != nil {
+			return Files{}, &Error{Message: err.Error()}
+		}
+		defer resp.Body.Close()
+
+		if resp.StatusCode != http.StatusOK {
+			e := parseError(resp.Body)
+			e.StatusCode = resp.StatusCode
+			return Files{}, e
+		}
+		var files Files
+		if e := parse(resp.Body, &files); e != nil {
+			return Files{}, e
+		}
+		return files, nil
+	}
+
+* Several functions available currently:
+
+- Contents
+- CreateFolder
+- CreateFile
+- GetFileById
+
+* And those allow me to...
+
+Sync files!
+
+.link https://github.com/corylanou/cloud-elements-demo/blob/master/03_sync/main.go The Code
+
+* Syncing Files
+
+We can now run:
+
+	go run main.go -path=cloudelements
+
+And it will
+
+- Create the folder if it doesn't exist
+- Create a file if it doesn't exist
+- Does not overwrite
+
+* Show me!
+
+* What is left
+
+- Testing... yes, lots and lots of testing!
+- Refactor some names.  They don't line up exactly with the api as I would like.
+- Wire up a lot more endpoints
+- Documentation
+- Better io streaming between syncing

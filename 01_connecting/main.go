@@ -29,7 +29,11 @@ func main() {
 	credentials.Elements[DROPBOX] = os.Getenv("CE_DROPBOX")
 	spew.Dump(credentials)
 
-	u := mustEndpoint("/hubs/documents/folders/contents")
+	u := url.URL{
+		Path:   path.Join(baseURL, "/hubs/documents/folders/contents"),
+		Scheme: "https",
+	}
+
 	query := url.Values{}
 	query.Set("path", "/")
 	u.RawQuery = query.Encode()
@@ -62,14 +66,6 @@ func main() {
 	}
 	spew.Dump(cloudFiles)
 
-}
-
-func mustEndpoint(endPath string) url.URL {
-	endPath = path.Join(baseURL, endPath)
-	return url.URL{
-		Path:   endPath,
-		Scheme: "https",
-	}
 }
 
 // Models
