@@ -75,7 +75,7 @@ func main() {
 		}
 		_, err = client.Folders.CreateFile(s.file, false, r, s.destination)
 		if err != nil {
-			log.Fatalf("\nfailed to write file %s to %s:  %+v", s.file.Name, s.source, err)
+			log.Fatalf("\nfailed to write file %s to %s:  %+v", s.file.Name, s.destination, err)
 		}
 
 		fmt.Printf(" DONE!\n")
