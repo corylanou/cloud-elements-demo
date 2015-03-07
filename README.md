@@ -20,6 +20,8 @@ Let's take a look at the [code](https://github.com/corylanou/cloud-elements-demo
 
 ### Creating a Library
 
+The [current library](https://github.com/corylanou/cloud-elements) has some limited functionality around the `Folders` endpoint
+
 #### The CloudFiles Library
 
 #### Consuming the File Library
