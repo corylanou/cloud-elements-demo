@@ -20,9 +20,11 @@ Let's take a look at the [code](https://github.com/corylanou/cloud-elements-demo
 
 ### Creating a Library
 
-#### The Files Library
+#### The CloudFiles Library
 
 #### Consuming the File Library
+
+[code](https://github.com/corylanou/cloud-elements-demo/blob/master/02_consuming/).
 
 #### Syncing different sources
 
