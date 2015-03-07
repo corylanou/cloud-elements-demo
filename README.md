@@ -49,3 +49,10 @@ curl -X POST
 'https://api.cloud-elements.com/elements/api-v2/hubs/documents/files?path=/test.txt&description=Test%20file&tags%5B%5D=test'
 ```
 Appears we now need the organization as part of the authorization header as well.
+
+No direction on what to post for creating a folder.  Error messages were very unclear as to what exactly they needed.
+ex: Folder name provided and folder name in path do not match
+
+Another fairly useless message encountered when trying to create a file:
+Message:Failed to update file RequestId:54fb5e3de4b06d3806bf3809
+Looking at the logs provided no more information.
