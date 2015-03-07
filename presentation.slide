@@ -35,6 +35,11 @@ http://denvergophers.github.io/
 - SpexIT
 - and so many more...
 
+
+They are all hiring... 100's of open positions currently in Denver $$$
+
+.link http://bit.ly/denver-go-jobs Denver Go Jobs
+
 * so... why go?
 
 * Because we have an awesome mascott!
@@ -60,6 +65,17 @@ http://denvergophers.github.io/
 - Predictable
 - Robust
 - Useful by default
+
+* Orthogonal???
+
+Wikipedia says:
+
+The number of independent primitive concepts has been minimized in order that the language be easy to describe, to learn, and to implement.
+
+On the other hand, these concepts have been applied “orthogonally” in order to maximize the expressive power of the language while trying to avoid deleterious superfluities.
+
+
+Let's just go with "simple"...
 
 * Go at a glance
 
@@ -89,7 +105,7 @@ http://denvergophers.github.io/
 * Come to our monthly meetup
 
 *When:* Fourth Thursday of every month, 6:30pm to 9:00 pm
-*Where:* Galvanize (where you are now)
+*Where:* SendGrid - 1451 Larimer St.
 
 FREE BEER AND PIZZA!
 
@@ -269,6 +285,18 @@ And... let's run it!
 
 * Looking at the library
 
+* File Structure
+
+I prefer more files with less code.  This is not considered the "Go" way.  I'm a rebel!
+
+- client.go
+- credentials.go
+- endpoints.go
+- errors.go
+- files.go
+- json.go
+- requests.go
+
 * Client
 
 Client is the top level "connection" to Cloud Elements API
@@ -446,3 +474,9 @@ And it will
 - Better io streaming between syncing
 
 * Questions?
+
+* Resources
+
+.link http://cloud-elements.com Cloud Elements
+.link https://github.com/corylanou/cloud-elements Go Cloud Elements Library
+.link https://github.com/corylanou/cloud-elements-demo This Presentation and all associated code
