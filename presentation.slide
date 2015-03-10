@@ -44,7 +44,7 @@ They are all hiring... 100's of open positions currently in Denver $$$
 
 * Because we have an awesome mascott!
 
-.image ./resources/img/gopher.jpg
+.image resources/img/gopher.jpg
 
 * But seriously...
 
@@ -91,7 +91,7 @@ Let's just go with "simple"...
 
 * Hello, Go
 
-.play ./resources/hello.go
+.play resources/hello.go
 
 * Why I like Go
 
